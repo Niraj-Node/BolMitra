@@ -1,9 +1,42 @@
+import { useChatStore } from "../store/useChatStore";
+import { useEffect, useRef } from "react";
+
+import ChatHeader from "./ChatHeader";
+import MessageInput from "./MessageInput";
+import MessageSkeleton from "./skeletons/MessageSkeleton";
+import { useAuthStore } from "../store/useAuthStore";
+import { formatMessageTime } from "../utils/time";
+
 const ChatContainer = () => {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-black shadow-md rounded-lg p-8">
-        <h1 className="text-2xl font-bold text-center">Chat Container</h1>
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+  } = useChatStore();
+  const { authUser } = useAuthStore();
+
+  useEffect(() => {
+    getMessages(selectedUser._id);
+  }, [selectedUser._id, getMessages]);
+
+  if (isMessagesLoading) {
+    return (
+      <div className="flex-1 flex flex-col overflow-auto">
+        <ChatHeader />
+        <MessageSkeleton />
+        <MessageInput />
       </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 flex flex-col overflow-auto">
+      <ChatHeader />
+
+      <p>messages....</p>
+
+      <MessageInput />
     </div>
   );
 };
