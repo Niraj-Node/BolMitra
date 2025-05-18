@@ -8,21 +8,26 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Helper to extract publicId from a Cloudinary URL
 const extractPublicId = (url) => {
   if (!url) return null;
 
-  // Check if it's a valid Cloudinary URL
   const isCloudinaryUrl = url.includes("res.cloudinary.com");
   if (!isCloudinaryUrl) return null;
 
   const parts = url.split("/");
-  const fileWithExtension = parts.pop();
+  const fileWithExtension = parts.pop(); // htxuzii0el0qtavsjedn.jpg
   const [publicId] = fileWithExtension.split(".");
 
-  // Handle nested folder structures, like user/profile/abc123
-  const folderPath = parts.slice(parts.indexOf("upload") + 1).join("/");
+  // Skip version part (e.g., v1747600274)
+  const uploadIndex = parts.indexOf("upload");
+  const pathAfterUpload = parts.slice(uploadIndex + 1);
 
+  // Remove version if it's like 'v1234567890'
+  if (pathAfterUpload[0]?.startsWith("v") && /^\d+$/.test(pathAfterUpload[0].slice(1))) {
+    pathAfterUpload.shift();
+  }
+
+  const folderPath = pathAfterUpload.join("/");
   return folderPath ? `${folderPath}/${publicId}` : publicId;
 };
 
