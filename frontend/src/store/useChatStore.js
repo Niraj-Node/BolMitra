@@ -4,23 +4,9 @@ import { axiosInstance } from "../utils/axios";
 
 export const useChatStore = create((set, get) => ({
   messages: [],
-  users: [],
   selectedUser: null,
-  isUsersLoading: false,
   isMessagesLoading: false,
   isSending: false,
-
-  getUsers: async () => {
-    set({ isUsersLoading: true });
-    try {
-      const res = await axiosInstance.get("/auth/users");
-      set({ users: res.data });
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      set({ isUsersLoading: false });
-    }
-  },
 
   getMessages: async (userId) => {
     set({ isMessagesLoading: true });
