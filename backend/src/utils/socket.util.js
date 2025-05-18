@@ -21,7 +21,7 @@ io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
   if (userId) userSocketMap[userId] = socket.id;
 
-  // io.emit() is used to send event to all the connected clients - multiple clients
+  // io.emit() is used to send event to all the connected clients - multicast to clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
@@ -30,5 +30,9 @@ io.on("connection", (socket) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
+
+export function getReceiverSocketId(userId) {
+  return userSocketMap[userId];
+}
 
 export { io, app, server };

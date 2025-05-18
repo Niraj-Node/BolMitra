@@ -1,6 +1,7 @@
 import Message from "../models/message.model.js";
 
 import { uploadMedia } from "../utils/cloudinary.util.js";
+import { getReceiverSocketId, io } from "../utils/socket.util.js";
 
 export const getMessages = async (req, res) => {
   try {
@@ -63,7 +64,11 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    // TODO: Realtime functionality goes here => socket.io
+    // Realtime functionality to emit new message to the receiver
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {
