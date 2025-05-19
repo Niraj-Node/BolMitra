@@ -63,7 +63,7 @@ const MessageInput = () => {
             <img
               src={imagePreview}
               alt="Preview"
-              className={`w-20 h-20 object-cover rounded-lg border border-zinc-700 ${
+              className={`w-20 h-20 object-cover rounded-lg border ${
                 isSending ? "cursor-not-allowed opacity-70" : "cursor-pointer"
               }`}
               onClick={() => {
@@ -74,7 +74,6 @@ const MessageInput = () => {
               <button
                 onClick={removeImage}
                 className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center"
-                type="button"
               >
                 <X className="size-3" />
               </button>
@@ -83,7 +82,7 @@ const MessageInput = () => {
         </div>
       )}
 
-      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+      {/* <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -128,6 +127,45 @@ const MessageInput = () => {
             <Send size={22} />
           )}
         </button>
+      </form> */}
+
+      <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        {/* <div className="w-full input input-bordered rounded-lg input-sm sm:input-md flex items-center border px-2 py-1 bg-base-200"> */}
+        <div className="flex items-center gap-2 flex-1 bg-base-200 border border-base-300 rounded-lg px-3 py-2">
+          <button
+            type="button"
+            onClick={() => !isSending && fileInputRef.current?.click()}
+            disabled={isSending}
+            className={`btn btn-ghost btn-sm sm:btn-md p-2 ${
+              imagePreview ? "text-emerald-500" : "text-zinc-400"
+            }`}
+          >
+            <Image size={20} />
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+            disabled={isSending}
+          />
+          <input
+            type="text"
+            placeholder="Type a message..."
+            className="w-full input input-bordered rounded-lg input-sm sm:input-md bg-transparent border-none focus:outline-none flex-1"
+            value={text}
+            onChange={(e) => !isSending && setText(e.target.value)}
+            disabled={isSending}
+          />
+          <button
+            type="submit"
+            className="btn btn-sm btn-circle btn-primary"
+            disabled={(!text.trim() && !imagePreview) || isSending}
+          >
+            {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send size={20} />}
+          </button>
+        </div>
       </form>
 
       {showFullPreview && imagePreview && !isSending && (

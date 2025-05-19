@@ -51,42 +51,39 @@ const ChatContainer = () => {
       <ChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages.map((message, index) => { 
+          const isSent = message.senderId === authUser._id;
+          return (
           <div
             key={message._id}
-            className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-            ref={messageEndRef}
+            className={`flex ${isSent ? "justify-end" : "justify-start"}`}
+            ref={index === messages.length - 1 ? messageEndRef : null}
           >
-            <div className=" chat-image avatar">
-              <div className="size-10 rounded-full border">
-                <img
-                  src={
-                    message.senderId === authUser._id
-                      ? authUser.profilePic || import.meta.env.VITE_DEFAULT_PROFILE_PIC
-                      : selectedUser.profilePic || import.meta.env.VITE_DEFAULT_PROFILE_PIC
-                  }
-                  alt="profile pic"
-                />
+                          <div
+                className={`max-w-[80%] rounded-xl p-3 shadow-sm ${
+                  isSent ? "bg-primary text-primary-content" : "bg-base-200 text-base-content"
+                }`}
+              >
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer"
+                    onClick={() => setPreviewImage(message.image)}
+                  />
+                )}
+                {message.text && <p className="text-sm break-words">{message.text}</p>}
+                <p
+                  className={`text-[10px] mt-1.5 ${
+                    isSent ? "text-primary-content/70" : "text-base-content/70"
+                  }`}
+                >
+                  {formatMessageTime(message.createdAt)}
+                </p>
               </div>
             </div>
-            <div className="chat-header mb-1">
-              <time className="text-xs opacity-50 ml-1">
-                {formatMessageTime(message.createdAt)}
-              </time>
-            </div>
-            <div className="chat-bubble flex flex-col">
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer"
-                  onClick={() => setPreviewImage(message.image)}
-                />
-              )}
-              {message.text && <p>{message.text}</p>}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <MessageInput />
