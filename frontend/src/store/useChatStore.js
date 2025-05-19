@@ -14,12 +14,14 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/messages/user/${userId}`);
       set({ messages: res.data });
+
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
       set({ isMessagesLoading: false });
     }
   },
+
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     set({ isSending: true });
@@ -47,13 +49,37 @@ export const useChatStore = create((set, get) => ({
         messages: [...get().messages, newMessage],
       });
     });
+
+    // Handle "messagesRead" notification from receiver
+    socket.on("messagesRead", ({ from }) => {
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.receiverId === from ? { ...msg, read: true } : msg
+        ),
+      }));
+    });
   },
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
+    socket.off("messagesRead");
   },
 
+  markMessagesAsRead: () => {
+    const socket = useAuthStore.getState().socket;
+    const authUser = useAuthStore.getState().authUser;
+    const selectedUser = get().selectedUser;
+  
+    if (!socket || !authUser || !selectedUser) return;
+  
+    socket.emit("markMessagesAsRead", {
+      senderId: selectedUser._id,
+      receiverId: authUser._id,
+    });
+  
+    console.log("Emit: markMessagesAsRead");
+  },  
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

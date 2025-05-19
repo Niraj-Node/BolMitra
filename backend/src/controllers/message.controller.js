@@ -60,6 +60,7 @@ export const sendMessage = async (req, res) => {
       text,
       image: imageUrl,
       video: videoUrl,
+      read: false,
     });
 
     await newMessage.save();
