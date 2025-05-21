@@ -40,7 +40,7 @@ export const uploadMedia = async (file, type = "image", folder = "BolMitra/Defau
 
 export const deleteImage = async (imageUrl) => {
 
-  const defaultProfileUrl = "https://res.cloudinary.com/dwckwrdvx/image/upload/v1747554396/Default_xltl9b.webp";
+  const defaultProfileUrl = process.env.VITE_DEFAULT_PROFILE_PIC;
   if (imageUrl === defaultProfileUrl) return;
 
   const publicId = extractPublicId(imageUrl);
